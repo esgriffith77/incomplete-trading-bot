@@ -7,7 +7,7 @@
 import alpaca_trade_api as tradeapi
 
 import numpy as np
-import tulipy as ti
+#import tulipy as ti
 import os, time, threading, pytz
 import pandas as pd
 
@@ -66,7 +66,7 @@ class Trader:
         self._L.info('#\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t#')
         self._L.info('#\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t#')
         self._L.info('#\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t#')
-        self._L.info('# O R D E R   S U B M I T T E D       ')
+        self._L.info('# O R D E R   S U B M I T T E D       ')
         self._L.info('#\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t#')
         self._L.info('#\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t#')
         self._L.info('#\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t#')
@@ -281,17 +281,24 @@ class Trader:
 
     def check_position(self,stock,maxAttempts=False):
         # this function checks whether the position is there or not
+        print('Check Position Start: %s' % stock.name)
+
 
         if not maxAttempts:
-            maxAttempts = gvars.maxAttempts['CP']
+            maxAttempts = 5 #gvars.maxAttempts['CP']
+
 
         attempt = 0
-        while attempt < maxAttempts:
+        while attempt < 5: #MaxAttempts:
             try:
+
                 position = self.alpaca.get_position(stock.name)
+                print('Check Position Next: %s' % stock.name)
                 stock.avg_entry_price = float(position.avg_entry_price)
                 stock.currentPrice = float(self.alpaca.get_position(stock.name).current_price)
+
                 return True
+
             except:
                 time.sleep(gvars.sleepTimes['CP'])
                 attempt += 1
@@ -597,7 +604,7 @@ class Trader:
     def run(self,stock):
         # this is the main thread
 
-        self._L.info('\n\n\n # #  R U N N I N G   B O T ––> (%s with %s) # #\n' % (stock.name,self.thName))
+        self._L.info('\n\n\n # #  R U N N I N G   B O T ––> (%s with %s) # #\n' % (stock.name,self.thName))
 
         if self.check_position(stock,maxAttempts=2): # check if the position exists beforehand
             self._L.info('There is already a position open with %s, aborting!' % stock.name)

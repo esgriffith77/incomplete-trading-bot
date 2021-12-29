@@ -2,12 +2,11 @@
 
 # This code is free, THANK YOU!
 # It is explained at the guide you can find at www.theincompleteguide.com
-# You will also find improvement ideas and explanations
-
+import traderlib
 from stocklib import *
 from traderlib import *
 from other_functions import *
-import threading, os, logging
+import threading, os, logging, sys
 from datetime import datetime
 import gvars
 from assetHandler import AssetHandler
@@ -69,16 +68,21 @@ def clean_open_orders(api):
 
 def check_account_ok(api):
 
-    account = api.get_account()
-    if account.account_blocked or account.trading_blocked or account.transfers_blocked:
+    try:
+        account = api.get_account()
+    except Exception as e:
+        _L.info('WARNING! Could not obtain you account. The error was: ')
+        _L.info(str(e))
+        sys.exit('Check it and restart the program')
 
-        print('OJO, account blocked. WTF?')
+    if account.account_blocked or account.trading_blocked or account.transfers_blocked:
+        print('WARNIG! Your Alpaca account is blocked. Check it on the web.')
         import pdb; pdb.set_trace()
 
 def run_tbot(_L,assHand,account):
 
     # initialize trader object
-    trader = Trader(gvars.API_KEY, gvars.API_SECRET_KEY, _L, account)
+    trader = traderlib.Trader(gvars.API_KEY, gvars.API_SECRET_KEY, _L, account)
 
     while True:
 
@@ -112,7 +116,7 @@ def main():
     _L.info('Max workers allowed: ' + str(gvars.MAX_WORKERS))
 
     # initialize the API with Alpaca
-    api = tradeapi.REST(gvars.API_KEY, gvars.API_SECRET_KEY, gvars.ALPACA_API_URL, api_version='v2')
+    api = traderlib.tradeapi.REST(gvars.API_KEY, gvars.API_SECRET_KEY, gvars.ALPACA_API_URL, api_version='v2')
 
     # initialize the asset handler
     assHand = AssetHandler()

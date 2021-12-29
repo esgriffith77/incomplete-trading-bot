@@ -77,7 +77,7 @@ class AssetHandler:
 
         print('\nUnlocking service initialized')
         while True:
-            print('\n# # # Unlocking assets # # #\n')
+            print('\n# # # Unlocking assets # # #\n')
             time_before = datetime.now()-timedelta(minutes=30)
 
 
